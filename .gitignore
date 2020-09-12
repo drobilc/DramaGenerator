@@ -130,3 +130,4 @@ dmypy.json
 
 # Don't publish folder for chats
 chats/
+generated_dramas/
