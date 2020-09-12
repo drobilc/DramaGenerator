@@ -5,6 +5,10 @@ import glob
 from bs4 import BeautifulSoup
 
 class FacebookHTMLDataExtractor(DataExtractor):
+
+    def __init__(self, directory, date_format='%b %d, %Y, %I:%M %p'):
+        super().__init__(directory)
+        self.date_format = date_format
     
     def _read_message_file(self, encoding='utf-8'):
         # TODO: Don't read the whole file at once
@@ -13,8 +17,8 @@ class FacebookHTMLDataExtractor(DataExtractor):
         chat_file = open(all_html_files[0], encoding=encoding)
         return chat_file
     
-    def _parse_date(self, date_element, date_format='%b %d, %Y, %I:%M %p'):
-        return datetime.strptime(date_element.text, date_format)
+    def _parse_date(self, date_element):
+        return datetime.strptime(date_element.text, self.date_format)
     
     def _parse_message_content(self, message_element):
         image_elements = message_element.find_all('img')
@@ -25,7 +29,7 @@ class FacebookHTMLDataExtractor(DataExtractor):
                 image_url = image_element['src']
                 images.append(image_url)
                 
-                # Remove image parent if it is a link to an image, so that we can later find links in HTMl 
+                # Remove image from HTML
                 if image_element.parent and image_element.parent.tag == 'a':
                     image_element.parent.decompose()            
         
@@ -34,7 +38,11 @@ class FacebookHTMLDataExtractor(DataExtractor):
         if reaction_element is not None:
             reaction_elements = reaction_element.find_all('li')
             for reaction_element in reaction_elements:
-                reactions.append(reaction_element.text)            
+                reactions.append(reaction_element.text)
+        
+            # Remove list of reactions from HTML, so it doesn't appear in message
+            # text
+            reaction_element.decompose()
         
         return {
             'images': images,
