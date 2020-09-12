@@ -12,4 +12,3 @@ class Message(object):
     
     def __repr__(self):
         return str(self)
-    
