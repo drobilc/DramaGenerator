@@ -1,6 +1,6 @@
 import argparse
 import os.path
-from drama_generator.data_extractors.facebook import FacebookHTMLDataExtractor
+from drama_generator.data_extractors import *
 from drama_generator.generators.latex_generator import LatexGenerator
 from drama_generator.processors import *
 
@@ -10,6 +10,8 @@ argument_parser = argparse.ArgumentParser(description='Make a drama out of your 
 # passed to the program, a default value is created using input directory name
 argument_parser.add_argument('INPUT_DIRECTORY', type=str, help='path to the chat directory')
 argument_parser.add_argument('-o', '--output-file', dest='output_file', type=str, help='output file path')
+
+argument_parser.add_argument('-p', '--parser', dest='parser', choices=EXTRACTOR_MAP.keys(), help='which parser to use to extract data from directory')
 
 # Additional arguments for message processors
 argument_parser.add_argument('--shout', dest='shout', action='store_true', help='write everything using only uppercase letters')
@@ -36,10 +38,10 @@ print('Input directory: {}'.format(input_directory))
 print('Output file: {}'.format(output_file))
 
 print('Parsing messages from input directory')
-# Create a new Facebook HTML extractor and use it to extract messages from
-# received directory
-facebook_html_extractor = FacebookHTMLDataExtractor(input_directory)
-messages = facebook_html_extractor.extract_data()
+# Based on the received parser name, generate a new parser and parse directory
+parser = EXTRACTOR_MAP[arguments.parser]
+message_parser = parser(input_directory)
+messages = message_parser.extract_data()
 print('Messages parsed')
 
 print('Applying processors to list of messages')
