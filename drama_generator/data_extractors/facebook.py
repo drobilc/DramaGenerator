@@ -88,4 +88,6 @@ class FacebookHTMLDataExtractor(DataExtractor):
             except Exception as e:
                 print(e)
         
-        return messages
+        # After all messages have been parsed, reverse them, because Facebook
+        # contains them in a reverse date order
+        return list(reversed(messages))
