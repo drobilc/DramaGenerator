@@ -128,6 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Don't publish folder for chats
+# Don't publish folders with input and output files
 chats/
 generated_dramas/
+
+# vscode configuration files
+.vscode
