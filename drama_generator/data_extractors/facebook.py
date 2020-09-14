@@ -13,18 +13,22 @@ class FacebookHTMLDataExtractor(DataExtractor):
     def _read_message_file(self, encoding='utf-8'):
         # TODO: Don't read the whole file at once
         all_html_files = glob.glob('{}/*.html'.format(self.directory))
-        assert len(all_html_files) >= 1
+
+        # Check that there is a file we can read from
+        assert len(all_html_files) >= 1 
         chat_file = open(all_html_files[0], encoding=encoding)
         return chat_file
     
     def _parse_date(self, date_element):
         return datetime.strptime(date_element.text, self.date_format)
     
+    # Parse non-ordinary-text content form a single message object
     def _parse_message_content(self, message_element):
         image_elements = message_element.find_all('img')
         
         images = []
         if len(image_elements) > 0:
+            # Get all images
             for image_element in image_elements:
                 image_url = image_element['src']
                 images.append(image_url)
@@ -33,6 +37,7 @@ class FacebookHTMLDataExtractor(DataExtractor):
                 if image_element.parent and image_element.parent.tag == 'a':
                     image_element.parent.decompose()            
         
+        # Get all reactions
         reactions = []
         reaction_element = message_element.find('ul')
         if reaction_element is not None:
@@ -50,6 +55,7 @@ class FacebookHTMLDataExtractor(DataExtractor):
             'reactions': reactions
         }
     
+    # Turn html divs into a Message objects
     def _parse_message(self, message_html):
         children = list(message_html.children)
         assert len(children) == 3
