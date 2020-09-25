@@ -1,4 +1,4 @@
-from .data_extractor import DataExtractor
+from .parser import Parser
 from ..message_objects.message import Message
 from datetime import datetime
 import glob
@@ -15,7 +15,7 @@ def datetime_parser(json_dict):
             pass
     return json_dict
 
-class TelegramJSONDataExtractor(DataExtractor):
+class TelegramJSONParser(Parser):
 
     DEFAULT_SENDER_NAME = 'Unknown'
 
@@ -35,7 +35,7 @@ class TelegramJSONDataExtractor(DataExtractor):
         if 'from' in message_json and message_json['from'] is not None:
             sender = message_json['from']
         else:
-            sender = TelegramJSONDataExtractor.DEFAULT_SENDER_NAME
+            sender = TelegramJSONParser.DEFAULT_SENDER_NAME
         
         text = message_json['text']
         if isinstance(text, list):
@@ -51,7 +51,7 @@ class TelegramJSONDataExtractor(DataExtractor):
 
         return Message(sender, text, date)
 
-    def extract_data(self):
+    def parse(self):
         json_file = self._read_message_file()
         json_file_content = json.load(json_file, object_hook=datetime_parser)
 

@@ -1,6 +1,6 @@
 import argparse
 import os.path
-from drama_generator.data_extractors import *
+from drama_generator.parsers import *
 from drama_generator.generators.latex_generator import LatexGenerator
 from drama_generator.processors import *
 
@@ -11,7 +11,7 @@ argument_parser = argparse.ArgumentParser(description='Make a drama out of your 
 argument_parser.add_argument('INPUT_DIRECTORY', type=str, help='path to the chat directory')
 argument_parser.add_argument('-o', '--output-file', dest='output_file', type=str, help='output file path')
 
-argument_parser.add_argument('-p', '--parser', dest='parser', choices=EXTRACTOR_MAP.keys(), help='which parser to use to extract data from directory')
+argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP.keys(), help='which parser to use to extract data from directory')
 
 # Additional arguments for message processors
 argument_parser.add_argument('--shout', dest='shout', action='store_true', help='write everything using only uppercase letters')
@@ -39,9 +39,9 @@ print('Output file: {}'.format(output_file))
 
 print('Parsing messages from input directory')
 # Based on the received parser name, generate a new parser and parse directory
-parser = EXTRACTOR_MAP[arguments.parser]
+parser = PARSER_MAP[arguments.parser]
 message_parser = parser(input_directory)
-messages = message_parser.extract_data()
+messages = message_parser.parse()
 print('Messages parsed')
 
 print('Applying processors to list of messages')
