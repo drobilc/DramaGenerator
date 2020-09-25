@@ -3,6 +3,8 @@ from pylatex.utils import italic, NoEscape, bold
 
 class LatexGenerator(object):
 
+    DEFAULT_TITLE = 'The drama'
+
     def __init__(self, messages):
         self.messages = messages
 
@@ -17,7 +19,7 @@ class LatexGenerator(object):
     """ Assemble the LaTeX file """
     def generate(self, output_path):
         # Create an output document
-        latex_document = Document(output_path)  
+        latex_document = Document(output_path)
 
         # Import LaTeX packages
         """ USAGE:
@@ -25,6 +27,10 @@ class LatexGenerator(object):
         """
         latex_document.packages.append(Package('titling'))
         latex_document.packages.append(Package('geometry', ['textwidth=350pt', 'textheight=600pt'])) # specify the dimensions of text area
+
+        # Use GentiumPlus font which includes all Unicode characters
+        latex_document.packages.append(Package('fontspec'))
+        latex_document.append(NoEscape(r'\setmainfont{GentiumPlus}'))
 
         # Define and set variables
         """ USAGE:
@@ -44,15 +50,14 @@ class LatexGenerator(object):
         latex_document.append(NoEscape(r'\end{titlingpage}'))
 
         # Write drama - currently commented out because smileys cause compilation errors
-
-        # for message in self.messages:
-        #     latex_document.extend(self._generate_latex_for_message(message))
-        #     latex_document.append(NewLine())
-
-        # TODO: For encoding problems with smileys see https://www.overleaf.com/learn/how-to/What_file_encodings_and_line_endings_should_I_use%3F
         
         # Sample text to clearly see the text area, font size and space between the lines
-        latex_document.append('tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text tetx text')
+        latex_document.append('dummy text ' * 100)
+
+        # Write a list of messages to document
+        for message in self.messages:
+            latex_document.extend(self._generate_latex_for_message(message))
+            latex_document.append(NewLine())
 
         # Generate a pdf drama based on LaTeX file assembled above. 
         # Set clean_tex=True if you want .tex file deleted after it is compiled to pdf.
