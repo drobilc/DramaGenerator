@@ -28,7 +28,9 @@ output_file = arguments.output_file
 
 # Build a list of processors that will be applied to a list of messages (use
 # arguments to construct it)
-message_processors = []
+message_processors = [
+    RemoveEmojisProcessor
+]
 
 if arguments.shout:
     message_processors.append(UpperCaseMessageProcessor)

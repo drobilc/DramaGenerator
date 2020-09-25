@@ -32,7 +32,6 @@ class LatexGenerator(object):
         # Use custom document class - drama.cls
         latex_document.documentclass = Command(
             'documentclass',
-            # options=['12pt', 'landscape'],
             arguments=['drama']
         )
 

@@ -1,1 +1,2 @@
 from .uppercase_message import UpperCaseMessageProcessor
+from .remove_emojis import RemoveEmojisProcessor
