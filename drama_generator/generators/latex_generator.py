@@ -30,7 +30,7 @@ class LatexGenerator(object):
 
         # Use GentiumPlus font which includes all Unicode characters
         latex_document.packages.append(Package('fontspec'))
-        latex_document.append(NoEscape(r'\setmainfont{GentiumPlus}'))
+        latex_document.append(NoEscape(r'\setmainfont{GentiumBasic}'))
 
         # Define and set variables
         """ USAGE:
