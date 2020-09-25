@@ -15,7 +15,7 @@ argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP
 argument_parser.add_argument('--title', dest='title', type=str, help='title for the generated drama or infografic')
 argument_parser.add_argument('--from', dest='date_from', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
 argument_parser.add_argument('--to', dest='date_to', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
-argument_parser.add_argument('--exclude', nargs='+', dest='excluded_persons', type=str, help='exclude certain person\'s messages, use like --exclude \'first person\' \'second person\'')
+argument_parser.add_argument('--exclude', dest='excluded_persons', type=str, help='exclude certain person\'s messages, use like --exclude "first person,second person,third person"')
 
 # Additional arguments for message processors
 argument_parser.add_argument('--shout', dest='shout', action='store_true', help='write everything using only uppercase letters')

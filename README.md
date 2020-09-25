@@ -22,7 +22,7 @@ where:
 - `<TITLE>` is the title user wants for their drama/infographic
 - `<DATE FROM>` only messges sent after this date will be used in the process of generating the drama/infographics, format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000
 - `<DATE TO>` only messges sent before this date will be used in the process of generating the drama/infographics, format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000
-- `<EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, the names of those persons have to be enclosed in `''`, e.g. `--exclude 'first person' \'second person\'`
+- `<EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, e.g. `--exclude "first person,second person,third person"`
 - `--shout` capitalizes all the messages in the drama
 
 Example:
