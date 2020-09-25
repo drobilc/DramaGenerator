@@ -11,7 +11,7 @@ argument_parser = argparse.ArgumentParser(description='Make a drama out of your 
 argument_parser.add_argument('INPUT_DIRECTORY', type=str, help='path to the chat directory')
 argument_parser.add_argument('-o', '--output-file', dest='output_file', type=str, help='output file path')
 
-argument_parser.add_argument('-p', '--parser', dest='parser', choices=EXTRACTOR_MAP.keys(), help='which parser to use to extract data from directory', default='FacebookHTMLParser')
+argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP.keys(), help='which parser to use to extract data from directory', default='FacebookHTMLParser')
 argument_parser.add_argument('--title', dest='title', type=str, help='title for the generated drama or infografic')
 argument_parser.add_argument('--from', dest='date_from', type=str, help='take only messages after given time in format YYYY-MM-DD, eg. 2020-03-27')
 argument_parser.add_argument('--to', dest='date_to', type=str, help='take only messages after given time in format YYYY-MM-DD, eg. 2020-03-27')
