@@ -5,15 +5,23 @@ class LatexGenerator(object):
 
     DEFAULT_TITLE = 'The drama'
 
-    def __init__(self, messages):
+    def __init__(self, messages, title=None):
         self.messages = messages
+        
+        self.title = title
+        if self.title is None:
+            self.title = LatexGenerator.DEFAULT_TITLE
+    
+    def authors(self):
+        authors = set([])
+        for message in self.messages:
+            authors.add(message.sender)
+        return list(authors)
 
     """ Convert message objects into strings to be written in LaTeX file """
     def _generate_latex_for_message(self, message):
         return [
-            bold(message.sender),
-            ': ',
-            message.message
+            Command('Line', arguments=[message.sender, message.message])
         ]
 
     """ Assemble the LaTeX file """
@@ -21,43 +29,19 @@ class LatexGenerator(object):
         # Create an output document
         latex_document = Document(output_path)
 
-        # Import LaTeX packages
-        """ USAGE:
-        latex_document.packages.append(Package('packagename', ['option1', 'option2', 'option3']))
-        """
-        latex_document.packages.append(Package('titling'))
-        latex_document.packages.append(Package('geometry', ['textwidth=350pt', 'textheight=600pt'])) # specify the dimensions of text area
+        # Use custom document class - drama.cls
+        latex_document.documentclass = Command(
+            'documentclass',
+            # options=['12pt', 'landscape'],
+            arguments=['drama']
+        )
 
-        # Use GentiumPlus font which includes all Unicode characters
-        latex_document.packages.append(Package('fontspec'))
-        latex_document.append(NoEscape(r'\setmainfont{GentiumBasic}'))
-
-        # Define and set variables
-        """ USAGE:
-        \command{value} -> latex_document.preamble.append(Command('command', 'value'))
-        \command{multiple}{values} -> latex_document.preamble.append(Command('command', ['multiple', 'values']))
-        if \subcommand appears among values -> NoEscape(r'\subcommand')
-        """
-        latex_document.preamble.append(Command('title', 'The Drama'))
-        latex_document.preamble.append(Command('author', 'Drama Generator 2000'))
-        latex_document.preamble.append(Command('date', NoEscape(r'\today')))
-        latex_document.preamble.append(Command('fontsize', ['12pt', '20pt'])) # [font size, space between ines]
-        latex_document.preamble.append(Command('setlength', [NoEscape(r'\parindent'), '0pt'])) # remove indent at the begining of paragraphs
-
-        # Create a title page
-        latex_document.append(NoEscape(r'\begin{titlingpage}'))
-        latex_document.append(NoEscape(r'\maketitle'))
-        latex_document.append(NoEscape(r'\end{titlingpage}'))
-
-        # Write drama - currently commented out because smileys cause compilation errors
-        
-        # Sample text to clearly see the text area, font size and space between the lines
-        latex_document.append('dummy text ' * 100)
+        authors = ', '.join(self.authors())
+        latex_document.append(Command('TitlePage', [self.title, authors]))
 
         # Write a list of messages to document
         for message in self.messages:
             latex_document.extend(self._generate_latex_for_message(message))
-            latex_document.append(NewLine())
 
         # Generate a pdf drama based on LaTeX file assembled above. 
         # Set clean_tex=True if you want .tex file deleted after it is compiled to pdf.
