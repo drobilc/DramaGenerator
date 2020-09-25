@@ -1,6 +1,6 @@
 import argparse
 import os.path
-from drama_generator.data_extractors import *
+from drama_generator.parsers import *
 from drama_generator.generators.latex_generator import LatexGenerator
 from drama_generator.processors import *
 
@@ -43,9 +43,9 @@ print('Output file: {}'.format(output_file))
 
 print('Parsing messages from input directory')
 # Based on the received parser name, generate a new parser and parse directory
-parser = EXTRACTOR_MAP[arguments.parser]
+parser = PARSER_MAP[arguments.parser]
 message_parser = parser(input_directory)
-messages = message_parser.extract_data()
+messages = message_parser.parse()
 print('Messages parsed')
 
 print('Applying processors to list of messages')

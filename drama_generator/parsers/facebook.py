@@ -1,10 +1,10 @@
-from .data_extractor import DataExtractor
+from .parser import Parser
 from ..message_objects.message import Message
 from datetime import datetime
 import glob
 from bs4 import BeautifulSoup
 
-class FacebookHTMLDataExtractor(DataExtractor):
+class FacebookHTMLParser(Parser):
 
     def __init__(self, directory, date_format='%b %d, %Y, %I:%M %p'):
         super().__init__(directory)
@@ -75,7 +75,7 @@ class FacebookHTMLDataExtractor(DataExtractor):
             reactions=message['reactions']
         )
     
-    def extract_data(self):
+    def parse(self):
         # Find HTML file in directory and read it
         html_file = self._read_message_file()
         html_file_content = html_file.read()
