@@ -1,5 +1,13 @@
 # README
 
+## Requirements
+
+To run Drama generator you need the following installed:
+
+- python libraries from `requirements.txt` file (`pip install requirements.txt`)
+- XeLaTeX, download MiXTeX from <https://miktex.org/download> and follow this <http://www.texts.io/support/0002/> or similar installation guide
+- free font Gentium Basics, accessible here: <https://software.sil.org/gentium/download/>
+
 ## Running
 
 Run in command line as:
@@ -17,9 +25,9 @@ where:
 - `<EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, the names of those persons have to be enclosed in `''`, e.g. `--exclude 'first person' \'second person\'`
 - `--shout` capitalizes all the messages in the drama
 
-Example: 
+Example:
 
-```
+```cmd
 python generate_drama.py drama_generator/chats/AjdaFrankovic_sCuAc-0aFQ -o=drama_generator/generated_dramas/test1 -p FacebookHTMLParser, --title The Great Monologue of Ajda --from 2020-01-01-00:00:00:000001 --to 2020-07-15 --exclude 'Niki Bizjak'
 ```
 
