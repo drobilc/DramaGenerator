@@ -5,7 +5,7 @@
 To run Drama generator you need the following installed:
 
 - python libraries from `requirements.txt` file (`pip install requirements.txt`)
-- XeLaTeX, download MiXTeX from <https://miktex.org/download> and follow this <http://www.texts.io/support/0002/> or similar installation guide
+- XeLaTeX, download MiXTeX from <https://miktex.org/download> and follow this <http://www.texts.io/support/0002/> or similar installation guide, or install TeXWorks or similar that also includes XeLaTeX
 - free font Gentium Basics, accessible here: <https://software.sil.org/gentium/download/>
 
 ## Running
