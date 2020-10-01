@@ -1,26 +1,23 @@
+from .generator import Generator
 from pylatex import Document, Section, Subsection, Command, NewLine, PageStyle, Package
 from pylatex.utils import italic, NoEscape, bold
 
-import argparse
 from datetime import datetime
 
-class LatexGenerator(object):
+class LatexGenerator(Generator):
 
     DEFAULT_TITLE = 'The drama'
 
     def __init__(self, messages, title=None, arguments=[]):
-        self.messages = messages
-
-        # Additional arguments for LaTeX generator
-        argument_parser = argparse.ArgumentParser()
-        argument_parser.add_argument('--no-acts', dest='generate_acts', action='store_false', help='should the generated scenes be grouped in acts')
-
-        arguments = argument_parser.parse_args(arguments)
-        self.generate_acts = arguments.generate_acts
-        
-        self.title = title
-        if self.title is None:
-            self.title = LatexGenerator.DEFAULT_TITLE
+        super().__init__(messages, title=title, arguments=arguments)
+    
+    def _setup_argument_parser(self, argument_parser):
+        # Add arguments to argument parser
+        argument_parser.add_argument('--no-acts',
+            dest='generate_acts',
+            action='store_false',
+            help='should the generated scenes be grouped in acts'
+        )
     
     def authors(self):
         authors = set([])
@@ -115,7 +112,7 @@ class LatexGenerator(object):
 
         # After the scenes have been generated, construct a list of acts. An act
         # is a group of scenes that appear in a certain time period (a month, ...)
-        if self.generate_acts:
+        if self.arguments.generate_acts:
             acts = self._generate_act_list(scenes)
         else:
             acts = [{ 'date': datetime.now(), 'scenes': scenes }]
@@ -123,7 +120,7 @@ class LatexGenerator(object):
         # Write a list of messages in scenes to latex document
         for act in acts:
 
-            if self.generate_acts:
+            if self.arguments.generate_acts:
                 act_date = act['date'].strftime("%B %Y")
                 latex_document.append(Command('Act', arguments=[act_date]))
             
