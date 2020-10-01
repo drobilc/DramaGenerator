@@ -20,7 +20,14 @@ argument_parser.add_argument('--exclude', dest='excluded_persons', type=str, hel
 # Additional arguments for message processors
 argument_parser.add_argument('--shout', dest='shout', action='store_true', help='write everything using only uppercase letters')
 
-arguments = argument_parser.parse_args()
+# Because we need the `parser` argument to construct a new parser, but also want
+# to allow parsers to have their own arguments, we don't want to call the
+# argument_parser.parse_args() as it will raise an exception if it encounters
+# unknown argument.
+# We should first parse the known arguments, construct a new parser and pass it
+# the unparsed arguments so it can parse them further.
+# https://docs.python.org/3/library/argparse.html#partial-parsing
+arguments, other_arguments = argument_parser.parse_known_args()
 
 # Parse a list of arguments received
 input_directory = arguments.INPUT_DIRECTORY
@@ -59,6 +66,6 @@ print('Processors applied')
 
 print('Generating output file')
 # Use LaTeX generator to generate drama and save it to output file
-generator = LatexGenerator(messages)
+generator = LatexGenerator(messages, arguments=other_arguments)
 generator.generate(output_file)
 print('Output file generated')

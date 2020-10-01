@@ -36,6 +36,9 @@
   
   \newcounter{scene}
   \setcounter{scene}{1}
+  
+  \newcounter{act}
+  \setcounter{act}{1}
 }
 
 %------------------------------------------------------------------------(end)
@@ -87,12 +90,26 @@
   \textit{\textbf{#1} #2}
 }
 
+\newcommand{\Act}[1]{
+  \pagebreak
+
+  \begin{center}
+    \Huge
+    \textbf{ACT \Roman{act}} \\
+    \Large
+    (#1)
+  \end{center}
+
+  \stepcounter{act}
+  \setcounter{scene}{1}
+}
+
 \newcommand{\Scene}[0]{
   \pagebreak
 
   \begin{center}
 
-    \Huge
+    \Large
 
     SCENE \arabic{scene}
 

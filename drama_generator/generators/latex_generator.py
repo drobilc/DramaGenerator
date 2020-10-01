@@ -1,12 +1,22 @@
 from pylatex import Document, Section, Subsection, Command, NewLine, PageStyle, Package
 from pylatex.utils import italic, NoEscape, bold
 
+import argparse
+from datetime import datetime
+
 class LatexGenerator(object):
 
     DEFAULT_TITLE = 'The drama'
 
-    def __init__(self, messages, title=None):
+    def __init__(self, messages, title=None, arguments=[]):
         self.messages = messages
+
+        # Additional arguments for LaTeX generator
+        argument_parser = argparse.ArgumentParser()
+        argument_parser.add_argument('--no-acts', dest='generate_acts', action='store_false', help='should the generated scenes be grouped in acts')
+
+        arguments = argument_parser.parse_args(arguments)
+        self.generate_acts = arguments.generate_acts
         
         self.title = title
         if self.title is None:
@@ -53,6 +63,35 @@ class LatexGenerator(object):
 
         return scenes
 
+    def _generate_act_list(self, scenes):
+        if len(scenes) <= 0:
+            return []
+        
+        acts = []
+
+        current_act = [scenes[0]]
+        current_act_start = scenes[0][0].date
+        # TODO: Scene can be empty, ...
+        for scene in scenes[1:]:
+            scene_start = scene[0].date
+            
+            if current_act_start.year != scene_start.year or current_act_start.month != scene_start.month:
+                acts.append({
+                    'date': current_act_start,
+                    'scenes': current_act
+                })
+                current_act = []
+                current_act_start = scene_start
+            
+            current_act.append(scene)
+        
+        if len(current_act) > 0:
+            acts.append({
+                'date': current_act_start,
+                'scenes': current_act
+            })
+
+        return acts
 
     def generate(self, output_path):
         """ Assemble the LaTeX file """
@@ -74,11 +113,24 @@ class LatexGenerator(object):
         # longer than specified time (for example 8 hours)
         scenes = self._generate_scene_list(self.messages)
 
+        # After the scenes have been generated, construct a list of acts. An act
+        # is a group of scenes that appear in a certain time period (a month, ...)
+        if self.generate_acts:
+            acts = self._generate_act_list(scenes)
+        else:
+            acts = [{ 'date': datetime.now(), 'scenes': scenes }]
+
         # Write a list of messages in scenes to latex document
-        for scene in scenes:
-            latex_document.append(Command('Scene'))
-            for message in scene:
-                latex_document.extend(self._generate_latex_for_message(message))
+        for act in acts:
+
+            if self.generate_acts:
+                act_date = act['date'].strftime("%B %Y")
+                latex_document.append(Command('Act', arguments=[act_date]))
+            
+            for scene in act['scenes']:
+                latex_document.append(Command('Scene'))
+                for message in scene:
+                    latex_document.extend(self._generate_latex_for_message(message))
 
         # Generate a pdf drama based on LaTeX file assembled above. 
         # Set clean_tex=True if you want .tex file deleted after it is compiled to pdf.
