@@ -1,7 +1,7 @@
 import argparse
 import os.path
 from drama_generator.parsers import *
-from drama_generator.generators.latex_generator import LatexGenerator
+from drama_generator.generators import *
 from drama_generator.processors import *
 
 # Create an argument parser and add arguments to it
@@ -12,6 +12,8 @@ argument_parser.add_argument('INPUT_DIRECTORY', type=str, help='path to the chat
 argument_parser.add_argument('-o', '--output-file', dest='output_file', type=str, help='output file path')
 
 argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP.keys(), help='which parser to use to extract data from directory', default='FacebookHTMLParser')
+argument_parser.add_argument('-g', '--generator', dest='generator', choices=GENERATOR_MAP.keys(), help='which generator to use to generate output file', default='LatexGenerator')
+
 argument_parser.add_argument('--title', dest='title', type=str, help='title for the generated drama or infografic')
 argument_parser.add_argument('--from', dest='date_from', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
 argument_parser.add_argument('--to', dest='date_to', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
@@ -65,7 +67,9 @@ for processor in message_processors:
 print('Processors applied')
 
 print('Generating output file')
+
 # Use LaTeX generator to generate drama and save it to output file
-generator = LatexGenerator(messages, arguments=other_arguments)
+generator_class = GENERATOR_MAP[arguments.generator]
+generator = generator_class(messages, arguments=other_arguments)
 generator.generate(output_file)
 print('Output file generated')

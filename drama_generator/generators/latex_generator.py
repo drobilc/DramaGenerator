@@ -1,12 +1,10 @@
 from .generator import Generator
 from pylatex import Document, Section, Subsection, Command, NewLine, PageStyle, Package
-from pylatex.utils import italic, NoEscape, bold
+from pylatex.utils import italic, NoEscape, bold, escape_latex
 
 from datetime import datetime
 
 class LatexGenerator(Generator):
-
-    DEFAULT_TITLE = 'The drama'
 
     def __init__(self, messages, title=None, arguments=[]):
         super().__init__(messages, title=title, arguments=arguments)
@@ -18,18 +16,6 @@ class LatexGenerator(Generator):
             action='store_false',
             help='should the generated scenes be grouped in acts'
         )
-    
-    def authors(self):
-        authors = set([])
-        for message in self.messages:
-            authors.add(message.sender)
-        return list(authors)
-
-    def _generate_latex_for_message(self, message):
-        """ Convert message objects into strings to be written in LaTeX file """
-        return [
-            Command('Line', arguments=[message.sender, message.message])
-        ]
     
     def _generate_scene_list(self, messages, silence_length=8):
         """Create a list of lists of messages that belong in the same scene"""
@@ -61,6 +47,7 @@ class LatexGenerator(Generator):
         return scenes
 
     def _generate_act_list(self, scenes):
+        """Create a list of scenes in the same act"""
         if len(scenes) <= 0:
             return []
         
@@ -89,12 +76,16 @@ class LatexGenerator(Generator):
             })
 
         return acts
-
-    def generate(self, output_path):
-        """ Assemble the LaTeX file """
-
+    
+    def authors(self):
+        authors = set([])
+        for message in self.messages:
+            authors.add(message.sender)
+        return list(authors)
+    
+    def _construct_latex_document(self, output_path):
         # Create an output document
-        latex_document = Document(output_path)
+        latex_document = Document(output_path, fontenc=None)
 
         # Use custom document class - drama.cls
         latex_document.documentclass = Command(
@@ -102,33 +93,114 @@ class LatexGenerator(Generator):
             arguments=['drama']
         )
 
-        # Add a title page to latex document
+        return latex_document
+    
+    def _construct_title_page(self):
         authors = ', '.join(self.authors())
-        latex_document.append(Command('TitlePage', [self.title, authors]))
+        return [
+            Command('TitlePage', [self.title, authors])
+        ]
+    
+    def _construct_table_of_contents(self):
+        return []
+    
+    def _generate_latex_for_act(self, act):
+        act_latex = []
 
-        # A scene consists of a stream of messages that doesn't have a pause
-        # longer than specified time (for example 8 hours)
+        act_date = act['date'].strftime("%B %Y")
+        act_latex.append(Command('Act', arguments=[act_date]))
+
+        for scene in act['scenes']:
+            act_latex.extend(self._generate_latex_for_scene(scene))
+        
+        return act_latex
+    
+    def _generate_latex_for_scene(self, scene):
+        scene_latex = []
+
+        scene_latex.append(Command('Scene'))
+        for message in scene:
+            scene_latex.extend(self._generate_latex_for_message(message))
+
+        return scene_latex
+
+    def _generate_latex_for_message(self, message):
+        """ Convert message objects into strings to be written in LaTeX file """
+        return [
+            Command('Line', arguments=[message.sender, message.message])
+        ]
+
+    def generate(self, output_path):
+        """Assemble the LaTeX file"""
+        # Create a new latex document
+        latex_document = self._construct_latex_document(output_path)
+        
+        # Add a title page
+        latex_document.extend(self._construct_title_page())
+
+        # Add a list of chapters
+        latex_document.extend(self._construct_table_of_contents())
+
+        # Generate a list of scenes
         scenes = self._generate_scene_list(self.messages)
 
-        # After the scenes have been generated, construct a list of acts. An act
-        # is a group of scenes that appear in a certain time period (a month, ...)
+        # If the --no-acts command line argument is received, skip act
+        # generation and only write scenes in the document. Otherwise, group
+        # scenes into acts and the write them to document.
         if self.arguments.generate_acts:
             acts = self._generate_act_list(scenes)
+            for act in acts:
+                latex_document.extend(self._generate_latex_for_act(act))
         else:
-            acts = [{ 'date': datetime.now(), 'scenes': scenes }]
+            for scene in scenes:
+                latex_document.extend(self._generate_latex_for_scene(scene))
 
-        # Write a list of messages in scenes to latex document
-        for act in acts:
-
-            if self.arguments.generate_acts:
-                act_date = act['date'].strftime("%B %Y")
-                latex_document.append(Command('Act', arguments=[act_date]))
-            
-            for scene in act['scenes']:
-                latex_document.append(Command('Scene'))
-                for message in scene:
-                    latex_document.extend(self._generate_latex_for_message(message))
-
-        # Generate a pdf drama based on LaTeX file assembled above. 
-        # Set clean_tex=True if you want .tex file deleted after it is compiled to pdf.
+        # Compile latex document
         latex_document.generate_pdf(clean_tex=True, compiler='xelatex')
+
+class PlariLatexGenerator(LatexGenerator):
+
+    def _construct_latex_document(self, output_path):
+        # Create an output document
+        latex_document = Document(output_path, fontenc=None)
+
+        # Use plari document class
+        latex_document.documentclass = Command(
+            'documentclass',
+            arguments=['plari']
+        )
+
+        return latex_document
+    
+    def _construct_title_page(self):
+        authors = '\\\\ '.join([escape_latex(a) for a in self.authors()])
+        return [
+            Command('title', [self.title]),
+            NoEscape('\\author{{ \\textbf{{Authors}} \\\\ {} }}'.format(authors)),
+            Command('maketitle'),
+        ]
+    
+    def _generate_latex_for_act(self, act):
+        act_latex = []
+
+        act_date = act['date'].strftime("%B %Y")
+        act_latex.append(NoEscape('\\newact{{ {} }}\n\n'.format(escape_latex(act_date))))
+
+        for scene in act['scenes']:
+            act_latex.extend(self._generate_latex_for_scene(scene))
+        
+        return act_latex
+
+    def _generate_latex_for_scene(self, scene):
+        scene_latex = []
+
+        scene_latex.append(NoEscape('\\newscene\n\n'))
+        for message in scene:
+            scene_latex.extend(self._generate_latex_for_message(message))
+
+        return scene_latex
+
+    def _generate_latex_for_message(self, message):
+        return [
+            NoEscape('\\repl{{ {} }} {}\n\n'.format(escape_latex(message.sender), escape_latex(message.message))),
+        ]
