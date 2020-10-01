@@ -33,6 +33,9 @@
 %-----------------------------------------------------------------------(fold)
 \AtBeginDocument{
   \setmainfont{GentiumBasic}
+  
+  \newcounter{scene}
+  \setcounter{scene}{1}
 }
 
 %------------------------------------------------------------------------(end)
@@ -82,4 +85,24 @@
 
 \newcommand{\Aside}[2]{
   \textit{\textbf{#1} #2}
+}
+
+\newcommand{\Scene}[0]{
+  \pagebreak
+
+  \begin{center}
+
+    \Huge
+
+    SCENE \arabic{scene}
+
+    \vspace{11pt}
+
+    \hrule
+
+  \end{center}
+
+  \vspace{24pt}
+
+  \stepcounter{scene}
 }
