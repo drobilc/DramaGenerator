@@ -6,6 +6,7 @@ Drama generator is an easily extensible Python script for generating dramatic te
 Currently, we can generate dramas from chats exported from:
 - [Facebook Messenger](https://www.messenger.com/)
 - [Telegram](https://telegram.org/)
+- [WhatsApp](https://www.whatsapp.com/)
 
 To learn how generate your own dramas, you can read our [Wiki page](https://github.com/drobilc/DramaGenerator/wiki) or follow our installation instructions below.
 
