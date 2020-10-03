@@ -1,5 +1,6 @@
 from .parser import Parser
 from ..message_objects.message import Message
+import logging
 from datetime import datetime
 import glob
 from bs4 import BeautifulSoup
@@ -101,7 +102,7 @@ class FacebookHTMLParser(Parser):
             try:
                 messages.append(self._parse_message(message_element))
             except Exception as e:
-                print(e)
+                logging.error(e)
         
         # After all messages have been parsed, reverse them, because Facebook
         # contains them in a reverse date order

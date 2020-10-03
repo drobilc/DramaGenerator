@@ -1,5 +1,6 @@
 from .parser import Parser
 from ..message_objects.message import Message
+import logging
 from datetime import datetime
 import glob
 import os.path
@@ -65,6 +66,6 @@ class WhatsAppParser(Parser):
                 if parsed_message is not None:
                     messages.append(parsed_message)
             except Exception as e:
-                print(e)
+                logging.error(e)
         
         return messages
