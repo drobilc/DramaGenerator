@@ -4,10 +4,12 @@ import logging
 from datetime import datetime
 import glob
 from bs4 import BeautifulSoup
+import locale
 
 class FacebookHTMLParser(Parser):
 
     DEFAULT_DATETIME_FORMAT = '%b %d, %Y, %I:%M %p'
+    DEFAULT_LOCALE = 'english_us'
     
     def _setup_argument_parser(self, argument_parser):
         # Allow users to override default datetime format that is used when
@@ -18,6 +20,15 @@ class FacebookHTMLParser(Parser):
             dest='date_format',
             help='datetime format to use while parsing your file',
             default=FacebookHTMLParser.DEFAULT_DATETIME_FORMAT
+        )
+
+        # Also allow users to add locale for parsing date in case their date
+        # format contains localized date strings such as 'Marec'
+        argument_parser.add_argument(
+            '--locale',
+            dest='locale',
+            help='locale to be used when parsing dates',
+            default=FacebookHTMLParser.DEFAULT_LOCALE
         )
     
     def _read_message_file(self, encoding='utf-8'):
@@ -30,7 +41,7 @@ class FacebookHTMLParser(Parser):
         return chat_file
     
     def _parse_date(self, date_element):
-        return datetime.strptime(date_element.text, self.arguments.date_format)
+        return datetime.strptime(date_element.text.lower().strip(), self.arguments.date_format)
     
     # Parse non-ordinary-text content form a single message object
     def _parse_message_content(self, message_element):
@@ -68,9 +79,9 @@ class FacebookHTMLParser(Parser):
     # Turn html divs into a Message objects
     def _parse_message(self, message_html):
         children = list(message_html.children)
-        assert len(children) == 3
+        assert len(children) >= 3
         
-        sender_element, message_element, date_element = children
+        sender_element, message_element, date_element = children[0], children[1], children[2]
         
         # Extract sender, message and date information from message
         sender = sender_element.text
@@ -86,6 +97,9 @@ class FacebookHTMLParser(Parser):
         )
     
     def parse(self):
+        if self.arguments.locale is not None:
+            locale.setlocale(locale.LC_ALL, self.arguments.locale)
+
         # Find HTML file in directory and read it
         html_file = self._read_message_file()
         html_file_content = html_file.read()
