@@ -7,10 +7,18 @@ import os.path
 class WhatsAppParser(Parser):
 
     SERVICE_MESSAGE_SENDER = 'WhatsApp'
+    DEFAULT_DATETIME_FORMAT = '%d/%m/%Y, %H:%M'
 
-    def __init__(self, directory, date_format='%d/%m/%Y, %H:%M'):
-        super().__init__(directory)
-        self.date_format = date_format
+    def _setup_argument_parser(self, argument_parser):
+        # Allow users to override default datetime format that is used when
+        # parsing messages. Documentation can be found at
+        # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+        argument_parser.add_argument(
+            '--date-format',
+            dest='date_format',
+            help='datetime format to use while parsing your file',
+            default=WhatsAppParser.DEFAULT_DATETIME_FORMAT
+        )
     
     def _read_messages_file(self, encoding='utf-8'):
         # Find a txt file inside the self.directory folder
@@ -39,7 +47,7 @@ class WhatsAppParser(Parser):
             message = other
         
         # Convert date from string to datetime object
-        parsed_date = datetime.strptime(date.strip(), self.date_format)
+        parsed_date = datetime.strptime(date.strip(), self.arguments.date_format)
 
         # Construct a new message and return it
         return Message(sender.strip(), message.strip(), parsed_date)

@@ -55,7 +55,7 @@ print('Output file: {}'.format(output_file))
 print('Parsing messages from input directory')
 # Based on the received parser name, generate a new parser and parse directory
 parser = PARSER_MAP[arguments.parser]
-message_parser = parser(input_directory)
+message_parser = parser(input_directory, arguments=other_arguments)
 messages = message_parser.parse()
 print('Messages parsed')
 
