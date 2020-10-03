@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #13132b;
+            color: #28b998;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+        }
+        #main-title {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        #date-range {
+            font-size: 0.9em;
+        }
+        .big-icon {
+            font-size: 2.5em;
+        }
+        .is-narrow {
+            max-width: 650px;
+        }
+        .text-important {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        .move-up {
+            margin-top: -0.4em;
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 1.5em;
+            margin-top: 3em;
+            position: relative;
+        }
+        .title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            transform: translateY(-50%);
+            background: #28b998;
+            z-index: -1;
+        }
+        .title h1 {
+            background: #13132b;
+            display: inline;
+            padding: 0 1em;
+            letter-spacing: 8px;
+        }
+        .fun-facts,
+        .fun-fact {
+            clear: both;
+        }
+        .fun-fact-title {
+            float: left;
+        }
+        .fun-fact-data {
+            float: right;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    
+    <section id="header">
+        <div class="container mt-5" id="main">
+            <div class="text-center" id="main-title">CHAT STATISTICS</div>
+            <div class="text-center" id="date-range">September 1st 2020 - September 16th 2020</div>
+        </div>
+    </section>
+
+    <section id="totals">
+        <div class="container mt-5 is-narrow">
+
+            <div class="title"><h1>CHAT TOTALS</h1></div>
+
+            <div class="row text-center">
+                <div class="col-4">
+                    <span class="material-icons big-icon">chat</span>
+                    <div class="text-important" id="total-messages">10509</div>
+                    <div class="move-up">messages</div>
+                </div>
+                <div class="col-4">
+                    <span class="material-icons big-icon">image</span>
+                    <div class="text-important" id="total-images">109</div>
+                    <div class="move-up">images</div>
+                </div>
+                <div class="col-4">
+                    <span class="material-icons big-icon">hourglass_empty</span>
+                    <div class="text-important">670h</div>
+                    <div class="move-up">total time</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="activity">
+        <div class="container mt-5 is-narrow">
+            <div class="title"><h1>ACTIVITY</h1></div>
+        </div>
+    </section>
+
+    <section id="">
+        <div class="container mt-5 is-narrow">
+            <div class="title"><h1>CHAT DAYS</h1></div>
+        </div>
+    </section>
+
+    <section id="">
+        <div class="container mt-5 pb-5 is-narrow">
+            <div class="title"><h1>FUN FACTS</h1></div>
+
+            <div class="fun-facts pb-4">
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Average messages per day</div>
+                    <div class="fun-fact-data" id="average-messages-per-day">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Longest message</div>
+                    <div class="fun-fact-data" id="longest-message">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">One word replies</div>
+                    <div class="fun-fact-data" id="one-word-replies">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Number of dirty emojis</div>
+                    <div class="fun-fact-data" id="dirty-emojis">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Total words</div>
+                    <div class="fun-fact-data" id="total-words">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Number of The Bibles written</div>
+                    <div class="fun-fact-data" id="bibles-written">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Times travelled around the world*</div>
+                    <div class="fun-fact-data" id="travel-distance">0</div>
+                </div>
+    
+                <div class="fun-fact">
+                    <div class="fun-fact-title">Longest monologue</div>
+                    <div class="fun-fact-data" id="longest-monologue">0</div>
+                </div>
+            </div>
+
+            <p class="mt-5" style="clear: both;">
+                <small>*distance covered by all words in 14pt Times New Roman font</small>
+            </p>
+
+        </div>
+    </section>
+
+</body>
+</html>
