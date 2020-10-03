@@ -23,7 +23,7 @@ class Generator(object):
         self._setup_argument_parser(argument_parser)
 
         # Use argument parser to actually parse received arguments
-        self.arguments = argument_parser.parse_args(arguments)
+        self.arguments, other_arguments = argument_parser.parse_known_args(arguments)
     
     def _setup_argument_parser(self, argument_parser):
         """Add additional arguments to argument parser if needed"""

@@ -1,8 +1,15 @@
 import argparse
 import os.path
+import logging
 from drama_generator.parsers import *
 from drama_generator.generators import *
 from drama_generator.processors import *
+
+# Setup logger that will be used to output data to the user
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 # Create an argument parser and add arguments to it
 argument_parser = argparse.ArgumentParser(description='Make a drama out of your chats')
@@ -49,27 +56,28 @@ if output_file is None:
     output_file_name = os.path.basename(os.path.normpath(input_directory))
     output_file = os.path.join('generated_dramas', output_file_name)
 
-print('Input directory: {}'.format(input_directory))
-print('Output file: {}'.format(output_file))
+logging.info('Input directory: {}'.format(input_directory))
+logging.info('Output file: {}'.format(output_file))
 
-print('Parsing messages from input directory')
+logging.info('Parsing messages from input directory')
 # Based on the received parser name, generate a new parser and parse directory
 parser = PARSER_MAP[arguments.parser]
-message_parser = parser(input_directory)
+message_parser = parser(input_directory, arguments=other_arguments)
 messages = message_parser.parse()
-print('Messages parsed')
+logging.info('Messages parsed')
 
-print('Applying processors to list of messages')
+logging.info('Applying processors to list of messages')
 # Apply each processor to a list of messages
 for processor in message_processors:
+    logging.info('Applying message processor: {}'.format(processor.__name__))
     drama_processor = processor()
     messages = drama_processor.process(messages)
-print('Processors applied')
+logging.info('Processors applied')
 
-print('Generating output file')
+logging.info('Generating output file')
 
 # Use LaTeX generator to generate drama and save it to output file
 generator_class = GENERATOR_MAP[arguments.generator]
 generator = generator_class(messages, arguments=other_arguments)
 generator.generate(output_file)
-print('Output file generated')
+logging.info('Output file generated')

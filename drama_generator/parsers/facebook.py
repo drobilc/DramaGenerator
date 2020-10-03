@@ -1,14 +1,24 @@
 from .parser import Parser
 from ..message_objects.message import Message
+import logging
 from datetime import datetime
 import glob
 from bs4 import BeautifulSoup
 
 class FacebookHTMLParser(Parser):
 
-    def __init__(self, directory, date_format='%b %d, %Y, %I:%M %p'):
-        super().__init__(directory)
-        self.date_format = date_format
+    DEFAULT_DATETIME_FORMAT = '%b %d, %Y, %I:%M %p'
+    
+    def _setup_argument_parser(self, argument_parser):
+        # Allow users to override default datetime format that is used when
+        # parsing messages. Documentation can be found at
+        # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+        argument_parser.add_argument(
+            '--date-format',
+            dest='date_format',
+            help='datetime format to use while parsing your file',
+            default=FacebookHTMLParser.DEFAULT_DATETIME_FORMAT
+        )
     
     def _read_message_file(self, encoding='utf-8'):
         # TODO: Don't read the whole file at once
@@ -20,7 +30,7 @@ class FacebookHTMLParser(Parser):
         return chat_file
     
     def _parse_date(self, date_element):
-        return datetime.strptime(date_element.text, self.date_format)
+        return datetime.strptime(date_element.text, self.arguments.date_format)
     
     # Parse non-ordinary-text content form a single message object
     def _parse_message_content(self, message_element):
@@ -92,7 +102,7 @@ class FacebookHTMLParser(Parser):
             try:
                 messages.append(self._parse_message(message_element))
             except Exception as e:
-                print(e)
+                logging.error(e)
         
         # After all messages have been parsed, reverse them, because Facebook
         # contains them in a reverse date order

@@ -1,16 +1,14 @@
 from .parser import Parser
 from ..message_objects.message import Message
+import logging
 from datetime import datetime
 import glob
-import json
-
-import datetime
 import json
 
 def datetime_parser(json_dict):
     for (key, value) in json_dict.items():
         try:
-            json_dict[key] = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+            json_dict[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
         except:
             pass
     return json_dict
