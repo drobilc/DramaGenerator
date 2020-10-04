@@ -22,12 +22,15 @@ argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP
 argument_parser.add_argument('-g', '--generator', dest='generator', choices=GENERATOR_MAP.keys(), help='which generator to use to generate output file', default='LatexGenerator')
 
 argument_parser.add_argument('-t','--title', dest='title', type=str, help='title for the generated drama or infografic')
-argument_parser.add_argument('-a','--from', dest='date_from', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
-argument_parser.add_argument('-b','--to', dest='date_to', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
+argument_parser.add_argument('-a','--after', dest='date_from', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
+argument_parser.add_argument('-b','--before', dest='date_to', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
 argument_parser.add_argument('-e','--exclude', dest='excluded_persons', type=str, help='exclude certain person\'s messages, use like --exclude "first person,second person,third person"')
 
 # Additional arguments for message processors
 argument_parser.add_argument('--shout', dest='shout', action='store_true', help='write everything using only uppercase letters')
+argument_parser.add_argument('--no_acts', dest='no_acts', action='store_true', help='use if you want drama not to be divided into acts')
+argument_parser.add_argument('--no_scenes', dest='no_scenes', action='store_true', help='use if you want drama not to be divided into scenes')
+argument_parser.add_argument('--new_scene_time', dest='new_scene_time', type=float, help='minimal time in hours that has to pass between two consecutive messages so that one scene ends and another one starts')
 
 # Because we need the `parser` argument to construct a new parser, but also want
 # to allow parsers to have their own arguments, we don't want to call the
