@@ -59,6 +59,10 @@ if has_date_from or has_date_to:
     date_to = arguments.date_to
     message_processors.append(FilterByDateProcessor)
 
+if arguments.excluded_persons is not None:
+    persons = arguments.excluded_persons
+    message_processors.append(RemovePersonsProcessor)
+
 # If output file is not provided, generate it using input directory argument
 if output_file is None:
     output_file_name = os.path.basename(os.path.normpath(input_directory))
@@ -81,6 +85,8 @@ for processor in message_processors:
     drama_processor = processor()
     if str(processor.__name__) == "FilterByDateProcessor":
         messages = drama_processor.process_date(messages, date_from, date_to)
+    elif str(processor.__name__) == "RemovePersonsProcessor":
+        messages = drama_processor.process_persons(messages, persons)
     else:
         messages = drama_processor.process(messages)
 logging.info('Processors applied')
