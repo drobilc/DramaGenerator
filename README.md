@@ -1,9 +1,11 @@
 # Drama generator
+
 > Make a drama out of your chats
 
 Drama generator is an easily extensible Python script for generating dramatic texts from chats on social media sites.
 
 Currently, we can generate dramas from chats exported from:
+
 - [Facebook Messenger](https://www.messenger.com/)
 - [Telegram](https://telegram.org/)
 - [WhatsApp](https://www.whatsapp.com/)
@@ -35,12 +37,16 @@ The `<PATH TO INPUT FILE>` is the only mandatory argument
 The drama generator script also accepts the following arguments:
 
 - `--output-file` `<PATH TO OUTPUT FILE>` has default value of `/drama_generator/generated_dramas/<INPUT FILE NAME>`
-- `--parser <PARSER>` should be chosen according to what social media are the messages from and in which format they are. Values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`. If none is given, the default value `FacebookHTMLParser` will be used.
-- `--title <TITLE>` is the title user wants for their drama/infographic
-- `--after <DATE FROM>` only messages sent after this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
-- `--before <DATE TO>` only messages sent before this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
-- `--exclude <EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, e.g. `--exclude "first person,second person,third person"`
+- `--parser` `<PARSER>` should be chosen according to what social media are the messages from and in which format they are. Values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`. If none is given, the default value `FacebookHTMLParser` will be used.
+- `--generator` `<GENERATOR>` should be chosen based on what we want our generated file to be: a drama or an infografic with statistics. Values can be choosen from the following options: `LatexGenerator`, `PlariLatexGenerator`, `StatisticsGenerator`. If none is given, the default value `LatexGenerator` will be used.
+- `--after` `<DATE FROM>` only messages sent after this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
+- `--before` `<DATE TO>` only messages sent before this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
+- `--exclude` `<EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, e.g. `--exclude "first person,second person,third person"`
 - `--shout` capitalizes all the messages in the drama
+- `--title` `<TITLE>` is the title user wants for their drama/infographic
+- `--no_acts` tells generator not to split drama into acts
+- `--no_scenes` tells generator not to split drama into scenes
+- `--new_scene_time` `<HOURS>`specifies minimal time in hours (float) that has to pass between two consecutive messages so that one scene ends and another one starts
 
 Example:
 

@@ -81,7 +81,7 @@ logging.info('Processors applied')
 
 logging.info('Generating output file')
 
-# Use LaTeX generator to generate drama and save it to output file
+# Use appropriate generator to generate drama or statistics and save it to output file
 generator_class = GENERATOR_MAP[arguments.generator]
 generator = generator_class(messages, arguments=other_arguments)
 generator.generate(output_file)
