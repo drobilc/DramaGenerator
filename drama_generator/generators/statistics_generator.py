@@ -3,11 +3,18 @@ from datetime import datetime
 import logging
 import string
 import collections
-import math
+
+import io
+
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import rc
 
 from bs4 import BeautifulSoup
 
 class StatisticsGenerator(Generator):
+
+    PRIMARY_COLOR = '#28b998'
     
     def _setup_argument_parser(self, argument_parser):
         argument_parser.add_argument(
@@ -118,7 +125,68 @@ class StatisticsGenerator(Generator):
         bibles_written = total_characters / BIBLE_CHARACTERS
         bibles_written_element.string.replace_with('{} bibles'.format(round(bibles_written, 3)))
     
+    def _get_default_plot_styling(self):
+        figure, axes = plt.subplots()
+
+        plt.yticks(fontname = "Montserrat")
+        plt.xticks(fontname = "Montserrat")
+
+        axes.tick_params(axis='x', colors=StatisticsGenerator.PRIMARY_COLOR)
+        axes.tick_params(axis='y', colors=StatisticsGenerator.PRIMARY_COLOR)
+
+        for child in axes.get_children():
+            if isinstance(child, matplotlib.spines.Spine):
+                child.set_color((0, 0, 0, 0))
+
+        return figure, axes
+    
+    def _plot_to_svg(self, plt):
+         # Construct a SVG file, but don't write it to disk
+        in_memory_file = io.BytesIO()
+        plt.savefig(in_memory_file, format='svg', transparent=True)
+        svg = in_memory_file.getvalue().decode('utf-8')
+
+        svg_parsed = BeautifulSoup(svg, 'lxml')
+        return svg_parsed
+
+    def _generate_contributions_graph(self, html):
+        messages_by_sender = self._messages_by_sender(self.messages)
+
+        # Get a list of people and number of messages that each one of them sent
+        people = list(messages_by_sender.keys())
+        values = list(map(len, messages_by_sender.values()))
+
+        # TODO: Try using [plotly](https://plotly.com/) library
+
+        # Plot char using matplotlib library
+        figure, axes = self._get_default_plot_styling()
+        plt.tight_layout()
+
+        y_positions = list(range(len(people)))
+
+        # Currently using matplotlib
+        # https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.barh.html#matplotlib.axes.Axes.barh
+        axes.barh(
+            y_positions,
+            values,
+            height=0.3,
+            color=StatisticsGenerator.PRIMARY_COLOR
+        )
+        axes.set_yticks(y_positions)
+        axes.set_yticklabels(people)
+        axes.invert_yaxis()
+        axes.invert_xaxis()
+        
+        svg = self._plot_to_svg(plt)
+
+        # Export graph as SVG and insert it into our document
+        contribution_graph_container = total_messages_element = html.find('div', { 'id': 'contributions-graph' })
+        contribution_graph_container.append(svg)
+
     def generate(self, output_path):
+        if len(self.messages) <= 0:
+            raise Exception('There are no messages')
+        
         messages_by_sender = self._messages_by_sender(self.messages)
 
         # Total number of messages
@@ -146,6 +214,8 @@ class StatisticsGenerator(Generator):
 
         # Generate fun facts for HTML document
         self._generate_fun_facts(html)
+
+        self._generate_contributions_graph(html)
 
         # Write the modified SVG graphics to output file
         with open(output_path, 'w', encoding='utf-8') as output_file:
