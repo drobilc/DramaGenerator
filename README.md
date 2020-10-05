@@ -37,8 +37,8 @@ The drama generator script also accepts the following arguments:
 - `--output-file` `<PATH TO OUTPUT FILE>` has default value of `/drama_generator/generated_dramas/<INPUT FILE NAME>`
 - `--parser <PARSER>` should be chosen according to what social media are the messages from and in which format they are. Values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`. If none is given, the default value `FacebookHTMLParser` will be used.
 - `--title <TITLE>` is the title user wants for their drama/infographic
-- `--date-from <DATE FROM>` only messages sent after this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS.UUUUUU`, eg. `2020-03-27` or `2020-03-27-07:31:22.000000`
-- `--date-to <DATE TO>` only messages sent before this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS.UUUUUU`, eg. `2020-03-27` or `2020-03-27-07:31:22.000000`
+- `--after <DATE FROM>` only messages sent after this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
+- `--before <DATE TO>` only messages sent before this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
 - `--exclude <EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, e.g. `--exclude "first person,second person,third person"`
 - `--shout` capitalizes all the messages in the drama
 
@@ -49,9 +49,9 @@ Example:
         drama_generator/chats/AjdaFrankovic_sCuAc-0aFQ
         --output-file drama_generator/generated_dramas/test1
         --parser FacebookHTMLParser
-        --title The Great Monologue of Ajda
-        --from 2020-01-01-00:00:00:000001
-        --to 2020-07-15
+        --title "The Great Monologue of Ajda"
+        --after 2020-01-01-00:00:00
+        --before 2020-07-15
 ```
 
 ## Debugging
@@ -60,7 +60,6 @@ For debugging in Visual Studio Code, your `launch.json` file should look like so
 
 ```json
 {
-    "version": "0.2.0",
     "configurations": [
         {
             "name": "Python: Generate Drama",
@@ -68,7 +67,14 @@ For debugging in Visual Studio Code, your `launch.json` file should look like so
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["drama_generator/chats/AjdaFrankovic_sCuAc-0aFQ", "-o drama_generator/generated_dramas/test1", "-p FacebookHTMLParser"]
+            "args": ["drama_generator/chats/AjdaFrankovic_sCuAc-0aFQ",
+                    "-o=generated_dramas/test1",
+                    "-p=FacebookHTMLParser",
+                    "--title='The Great Monologue of Ajda'",
+                    "-a=2020-03-27-07:31:22",
+                    "-b=2020-09-03",
+                    "-e=Niki Bizjak",
+                    "--shout"]
         }
     ]
 }
