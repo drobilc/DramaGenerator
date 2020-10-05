@@ -22,12 +22,8 @@ argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP
 argument_parser.add_argument('-g', '--generator', dest='generator', choices=GENERATOR_MAP.keys(), help='which generator to use to generate output file', default='LatexGenerator')
 
 argument_parser.add_argument('-t','--title', dest='title', type=str, help='title for the generated drama or infografic')
-argument_parser.add_argument('-a','--after', dest='date_from', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
-argument_parser.add_argument('-b','--before', dest='date_to', type=str, help='take only messages after given time in format YYYY-MM-DD-HH:MM:SS.UUUUUU, eg. 2020-03-27 or 2020-03-27-07:31:22.000000')
-argument_parser.add_argument('-e','--exclude', dest='excluded_persons', type=str, help='exclude certain person\'s messages, use like --exclude "first person,second person,third person"')
 
 # Additional arguments for message processors
-argument_parser.add_argument('--shout', dest='shout', action='store_true', help='write everything using only uppercase letters')
 argument_parser.add_argument('--no_acts', dest='no_acts', action='store_true', help='use if you want drama not to be divided into acts')
 argument_parser.add_argument('--no_scenes', dest='no_scenes', action='store_true', help='use if you want drama not to be divided into scenes')
 argument_parser.add_argument('--new_scene_time', dest='new_scene_time', type=float, help='minimal time in hours that has to pass between two consecutive messages so that one scene ends and another one starts')
@@ -49,22 +45,16 @@ output_file = arguments.output_file
 # arguments to construct it)
 message_processors = []
 
-message_processors.append(RemoveEmojisProcessor)
-
-if arguments.shout:
-    message_processors.append(UpperCaseMessageProcessor)
-
-
-has_date_from = arguments.date_from is not None
-has_date_to = arguments.date_to is not None
-if has_date_from or has_date_to:
-    date_from = arguments.date_from
-    date_to = arguments.date_to
-    message_processors.append(FilterByDateProcessor)
-
-if arguments.excluded_persons is not None:
-    persons = arguments.excluded_persons
-    message_processors.append(RemovePersonsProcessor)
+logging.info('Processors:')
+for ProcessorClass in PROCESSORS:
+    processor = ProcessorClass(arguments=other_arguments)
+    should_run_processor = processor.should_run()
+    logging.info('[{}] {}'.format(
+        'x' if should_run_processor else ' ',
+        ProcessorClass.__name__
+    ))
+    if should_run_processor:
+        message_processors.append(processor)
 
 # If output file is not provided, generate it using input directory argument
 if output_file is None:
@@ -84,14 +74,9 @@ logging.info('Messages parsed')
 logging.info('Applying processors to list of messages')
 # Apply each processor to a list of messages
 for processor in message_processors:
-    logging.info('Applying message processor: {}'.format(processor.__name__))
-    drama_processor = processor()
-    if str(processor.__name__) == "FilterByDateProcessor":
-        messages = drama_processor.process_date(messages, date_from, date_to)
-    elif str(processor.__name__) == "RemovePersonsProcessor":
-        messages = drama_processor.process_persons(messages, persons)
-    else:
-        messages = drama_processor.process(messages)
+    logging.info('Applying message processor: {}'.format(processor.__class__.__name__))
+    messages = processor.process(messages)
+    
 logging.info('Processors applied')
 
 logging.info('Generating output file')
