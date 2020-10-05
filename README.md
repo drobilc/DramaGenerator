@@ -46,10 +46,10 @@ Example:
 
 ```cmd
     python generate_drama.py
-        drama_generator/chats/AjdaFrankovic_sCuAc-0aFQ
-        --output-file drama_generator/generated_dramas/test1
+        drama_generator/chats/test_input
+        --output-file drama_generator/generated_dramas/test_output
         --parser FacebookHTMLParser
-        --title "The Great Monologue of Ajda"
+        --title "The Great Monologue"
         --after 2020-01-01-00:00:00
         --before 2020-07-15
 ```
@@ -67,13 +67,13 @@ For debugging in Visual Studio Code, your `launch.json` file should look like so
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["drama_generator/chats/AjdaFrankovic_sCuAc-0aFQ",
-                    "-o=generated_dramas/test1",
+            "args": ["drama_generator/chats/test_input",
+                    "-o=generated_dramas/test_output",
                     "-p=FacebookHTMLParser",
-                    "--title='The Great Monologue of Ajda'",
+                    "--title='The Great Monologue'",
                     "-a=2020-03-27-07:31:22",
                     "-b=2020-09-03",
-                    "-e=Niki Bizjak",
+                    "-e=Jane Doe",
                     "--shout"]
         }
     ]
