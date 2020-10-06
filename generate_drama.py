@@ -22,8 +22,7 @@ argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP
 argument_parser.add_argument('-g', '--generator', dest='generator', choices=GENERATOR_MAP.keys(), help='which generator to use to generate output file', default='LatexGenerator')
 
 # Additional arguments for message processors
-argument_parser.add_argument('--no_acts', dest='no_acts', action='store_true', help='use if you want drama not to be divided into acts')
-argument_parser.add_argument('--no_scenes', dest='no_scenes', action='store_true', help='use if you want drama not to be divided into scenes')
+
 argument_parser.add_argument('--new_scene_time', dest='new_scene_time', type=float, help='minimal time in hours that has to pass between two consecutive messages so that one scene ends and another one starts')
 
 # Because we need the `parser` argument to construct a new parser, but also want

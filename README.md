@@ -44,9 +44,9 @@ The drama generator script also accepts the following arguments:
 - `--exclude` `<EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, e.g. `--exclude "first person,second person,third person"`
 - `--shout` capitalizes all the messages in the drama
 - `--title` `<TITLE>` is the title user wants for their drama/infographic
-- `--no_acts` tells generator not to split drama into acts
-- `--no_scenes` tells generator not to split drama into scenes
-- `--new_scene_time` `<HOURS>`specifies minimal time in hours (float) that has to pass between two consecutive messages so that one scene ends and another one starts
+- `--no-acts` tells generator not to split drama into acts
+- `--no-scenes` tells generator not to split drama into scenes
+- `--new-scene-time` `<HOURS>`specifies minimal time in hours (float) that has to pass between two consecutive messages so that one scene ends and another one starts
 
 Example:
 
