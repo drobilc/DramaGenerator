@@ -21,8 +21,6 @@ argument_parser.add_argument('-o', '--output-file', dest='output_file', type=str
 argument_parser.add_argument('-p', '--parser', dest='parser', choices=PARSER_MAP.keys(), help='which parser to use to extract data from directory', default='FacebookHTMLParser')
 argument_parser.add_argument('-g', '--generator', dest='generator', choices=GENERATOR_MAP.keys(), help='which generator to use to generate output file', default='LatexGenerator')
 
-argument_parser.add_argument('-t','--title', dest='title', type=str, help='title for the generated drama or infografic')
-
 # Additional arguments for message processors
 argument_parser.add_argument('--no_acts', dest='no_acts', action='store_true', help='use if you want drama not to be divided into acts')
 argument_parser.add_argument('--no_scenes', dest='no_scenes', action='store_true', help='use if you want drama not to be divided into scenes')
