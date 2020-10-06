@@ -18,8 +18,14 @@ class LatexGenerator(Generator):
             action='store_true',
             help='turn off grouping of messages into scenes'
         )
+        argument_parser.add_argument('--new-scene-time',
+            dest='new_scene_time',
+            type=float,
+            help='minimal time in hours that has to pass between two consecutive messages so that one scene ends and another one starts',
+            default=8
+        )
     
-    def _generate_scene_list(self, messages, silence_length=8):
+    def _generate_scene_list(self, messages, silence_length):
         """Create a list of lists of messages that belong in the same scene"""
         # A scene consists of a stream of messages that doesn't have a pause
         # longer than specified time.
@@ -149,7 +155,7 @@ class LatexGenerator(Generator):
         # generation since we have no scenes to be grouped into acts.
         # Otherwise, group messsages into scenes and the write them to document.
         if not self.arguments.no_scenes:
-            scenes = self._generate_scene_list(self.messages)
+            scenes = self._generate_scene_list(self.messages, self.arguments.new_scene_time)
             
             # If --no-scenes aplies, we do not create acts
 
