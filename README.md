@@ -54,7 +54,7 @@ These arguments can be applied regardless of the choice of social media, format 
 |`FacebookHTMLParser`|`--locale`     |string  |`english_us`         |locale from the file with your exported messages to be used when parsing dates\*|
 |`WhatsAppParser`    |`--date-format`|string  |`%d/%m/%Y, %H:%M`    |format of the datetime from the file with your exported messages to be used when parsing|
 
-\* in case date format contains localized date strings such as 'Marec'/'March'/'März'/...
+\* in case date format contains localized date strings such as `Marec`/`March`/`März`/...
 
 ### Processor specific arguments - filters
 
