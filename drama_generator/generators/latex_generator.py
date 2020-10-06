@@ -5,19 +5,27 @@ from pylatex.utils import italic, NoEscape, bold, escape_latex
 from datetime import datetime
 
 class LatexGenerator(Generator):
-
-    def __init__(self, messages, title=None, arguments=[]):
-        super().__init__(messages, title=title, arguments=arguments)
     
     def _setup_argument_parser(self, argument_parser):
         # Add arguments to argument parser
         argument_parser.add_argument('--no-acts',
-            dest='generate_acts',
-            action='store_false',
-            help='should the generated scenes be grouped in acts'
+            dest='no_acts',
+            action='store_true',
+            help='turn off grouping of generated scenes into acts'
+        )
+        argument_parser.add_argument('--no-scenes',
+            dest='no_scenes',
+            action='store_true',
+            help='turn off grouping of messages into scenes'
+        )
+        argument_parser.add_argument('--new-scene-time',
+            dest='new_scene_time',
+            type=float,
+            help='minimal time in hours that has to pass between two consecutive messages so that one scene ends and another one starts',
+            default=8
         )
     
-    def _generate_scene_list(self, messages, silence_length=8):
+    def _generate_scene_list(self, messages, silence_length):
         """Create a list of lists of messages that belong in the same scene"""
         # A scene consists of a stream of messages that doesn't have a pause
         # longer than specified time.
@@ -87,6 +95,7 @@ class LatexGenerator(Generator):
         # Create an output document
         latex_document = Document(output_path, fontenc=None)
 
+        # TODO: set fixed path to drama.cls
         # Use custom document class - drama.cls
         latex_document.documentclass = Command(
             'documentclass',
@@ -141,19 +150,28 @@ class LatexGenerator(Generator):
         # Add a list of chapters
         latex_document.extend(self._construct_table_of_contents())
 
-        # Generate a list of scenes
-        scenes = self._generate_scene_list(self.messages)
+        # If the --no-scenes command line argument is received, skip scene
+        # generation and only write messages in the document. Also skip act 
+        # generation since we have no scenes to be grouped into acts.
+        # Otherwise, group messsages into scenes and the write them to document.
+        if not self.arguments.no_scenes:
+            scenes = self._generate_scene_list(self.messages, self.arguments.new_scene_time)
+            
+            # If --no-scenes aplies, we do not create acts
 
-        # If the --no-acts command line argument is received, skip act
-        # generation and only write scenes in the document. Otherwise, group
-        # scenes into acts and the write them to document.
-        if self.arguments.generate_acts:
-            acts = self._generate_act_list(scenes)
-            for act in acts:
-                latex_document.extend(self._generate_latex_for_act(act))
+            # If the --no-acts command line argument is received, skip act
+            # generation and only write scenes in the document. Otherwise, group
+            # scenes into acts and the write them to document.
+            if not self.arguments.no_acts:
+                acts = self._generate_act_list(scenes)
+                for act in acts:
+                    latex_document.extend(self._generate_latex_for_act(act))
+            else:
+                for scene in scenes:
+                    latex_document.extend(self._generate_latex_for_scene(scene))
         else:
-            for scene in scenes:
-                latex_document.extend(self._generate_latex_for_scene(scene))
+            for message in self.messages:
+                latex_document.extend(self._generate_latex_for_message(message))
 
         # Compile latex document
         latex_document.generate_pdf(clean_tex=True, compiler='xelatex')
