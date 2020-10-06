@@ -3,11 +3,15 @@ from datetime import datetime
 import logging
 import string
 import collections
-import math
 
 from bs4 import BeautifulSoup
 
+import plotly.graph_objects as go
+import plotly
+
 class StatisticsGenerator(Generator):
+
+    PRIMARY_COLOR = '#28b998'
     
     def _setup_argument_parser(self, argument_parser):
         argument_parser.add_argument(
@@ -117,9 +121,123 @@ class StatisticsGenerator(Generator):
         BIBLE_CHARACTERS = 3116480
         bibles_written = total_characters / BIBLE_CHARACTERS
         bibles_written_element.string.replace_with('{} bibles'.format(round(bibles_written, 3)))
-    
-    def generate(self, output_path):
+
+    def _get_default_plot_theme(self):
+        layout = plotly.graph_objects.Layout(
+            font={'family': 'Montserrat', 'color': 'white'},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            colorscale={
+                'sequential': [[0.0, 'rgba(0, 0, 0, 0)'], [1.0, '#28b998']],
+                'diverging': [[0.0, 'rgba(0, 0, 0, 0)'], [1.0, '#28b998']],
+                'sequentialminus': [[0.0, 'rgba(0, 0, 0, 0)'], [1.0, '#28b998']],
+            },
+            colorway=['#28b998'],
+            yaxis={
+                'gridcolor': StatisticsGenerator.PRIMARY_COLOR,
+                'showgrid': False
+            },
+            xaxis={
+                'gridcolor': StatisticsGenerator.PRIMARY_COLOR,
+                'showgrid': False
+            }
+        )
+        return plotly.graph_objects.layout.Template(
+            layout=layout
+        )
+
+    def _generate_contributions_graph(self, html):
         messages_by_sender = self._messages_by_sender(self.messages)
+
+        # Get a list of people and number of messages that each one of them sent
+        people = list(messages_by_sender.keys())
+        values = list(map(len, messages_by_sender.values()))
+
+        figure = go.Figure()
+        figure.update_layout(template=self._get_default_plot_theme())
+        
+        figure.add_traces(go.Bar(
+            x=values, y=people,
+            text=values, textposition='auto',
+            marker_color=StatisticsGenerator.PRIMARY_COLOR,
+            orientation='h'
+        ))
+
+        generated_plot_html = plotly.offline.plot(figure, include_plotlyjs=False, output_type='div')
+        plot_html = BeautifulSoup(generated_plot_html, 'html.parser')
+
+        # Export graph as SVG and insert it into our document
+        contribution_graph_container = total_messages_element = html.find('div', { 'id': 'contributions-graph' })
+        contribution_graph_container.append(plot_html)
+    
+    def _generate_number_of_messages_per_day_graph(self, html):
+        messages_by_sender = self._messages_by_sender(self.messages)
+
+        figure = go.Figure()
+        figure.update_layout(template=self._get_default_plot_theme())
+
+        for sender, messages in messages_by_sender.items():
+            messages_by_day = self._messages_by_day(messages)
+            days = list(messages_by_day.keys())
+            values = list(map(len, messages_by_day.values()))
+
+            figure.add_traces(
+                go.Bar(
+                    name=sender,
+                    x=days, y=values,
+                    # marker_color=StatisticsGenerator.PRIMARY_COLOR
+                )
+            )
+        
+        figure.update_layout(barmode='stack')
+
+        generated_plot_html = plotly.offline.plot(figure, include_plotlyjs=False, output_type='div')
+        plot_html = BeautifulSoup(generated_plot_html, 'html.parser')
+
+        # Export graph as SVG and insert it into our document
+        contribution_graph_container = total_messages_element = html.find('div', { 'id': 'number-of-messages-per-day-graph' })
+        contribution_graph_container.append(plot_html)
+    
+    def _generate_messages_heatmap(self, html):
+        heatmap_data = [[0 for hour in range(24)] for day in range(7)]
+        
+        for message in self.messages:
+            day = message.date.weekday()
+            hour = message.date.hour
+            heatmap_data[day][hour] += 1
+
+        figure = go.Figure()
+        figure.update_layout(template=self._get_default_plot_theme())
+        
+        figure.add_traces(go.Heatmap(
+            x=['{}h'.format(i) for i in range(24)],
+            y=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            z=heatmap_data,
+            colorscale=[[0.0, '#2b2b41'], [1.0, '#6affdc']]
+        ))
+
+        generated_plot_html = plotly.offline.plot(figure, include_plotlyjs=False, output_type='div')
+        plot_html = BeautifulSoup(generated_plot_html, 'html.parser')
+
+        # Export graph as SVG and insert it into our document
+        message_heatmap_container = total_messages_element = html.find('div', { 'id': 'message-heatmap' })
+        message_heatmap_container.append(plot_html)
+
+    def generate(self, output_path):
+        if len(self.messages) <= 0:
+            raise Exception('There are no messages')
+
+        with open('drama_generator/generators/templates/statistics_template.html', 'r', encoding='utf-8') as template_file:
+            template = template_file.read()
+        
+        html = BeautifulSoup(template, 'html.parser')
+
+        first_message, last_message = self.messages[0], self.messages[-1]
+        first_message_date = first_message.date.strftime('%d %B %Y')
+        last_message_date = last_message.date.strftime('%d %B %Y')
+        chat_date_string = '{} - {}'.format(first_message_date, last_message_date)
+        date_range_element = html.find('div', { 'id': 'date-range' })
+        date_range_element.string.replace_with('{}'.format(chat_date_string))
 
         # Total number of messages
         total_messages = len(self.messages)
@@ -131,11 +249,6 @@ class StatisticsGenerator(Generator):
         # Total chat time
         total_chat_time = '2m 7d'
 
-        with open('drama_generator/generators/templates/statistics_template.html', 'r', encoding='utf-8') as template_file:
-            template = template_file.read()
-        
-        html = BeautifulSoup(template, 'html.parser')
-
         # Write total number of messages to HTML document
         total_messages_element = html.find('div', { 'id': 'total-messages' })
         total_messages_element.string.replace_with('{}'.format(total_messages))
@@ -146,6 +259,12 @@ class StatisticsGenerator(Generator):
 
         # Generate fun facts for HTML document
         self._generate_fun_facts(html)
+
+        self._generate_contributions_graph(html)
+
+        self._generate_number_of_messages_per_day_graph(html)
+
+        self._generate_messages_heatmap(html)
 
         # Write the modified SVG graphics to output file
         with open(output_path, 'w', encoding='utf-8') as output_file:
