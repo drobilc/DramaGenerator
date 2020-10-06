@@ -4,6 +4,8 @@ from pylatex.utils import italic, NoEscape, bold, escape_latex
 
 from datetime import datetime
 
+import shutil, os
+
 class LatexGenerator(Generator):
     
     def _setup_argument_parser(self, argument_parser):
@@ -138,6 +140,22 @@ class LatexGenerator(Generator):
         return [
             Command('Line', arguments=[message.sender, message.message])
         ]
+    
+    def _prepare_latex_environment(self, output_path):
+        """Prepare LaTeX environment before compilation"""
+        # Copy the `drama.cls` latex class file from source folder to
+        # output_directory with name `drama.cls`
+        output_directory = os.path.dirname(output_path)
+        source_filename = os.path.join('drama_generator/generators/templates/', 'drama.cls')
+        destination_filename = os.path.join(output_directory, 'drama.cls')
+        shutil.copyfile(source_filename, destination_filename)
+
+    def _clean_latex_environment(self, output_path):
+        """Clean the environment after compilation"""
+        # Remove `drama.cls` file from the output directory
+        output_directory = os.path.dirname(output_path)
+        destination_filename = os.path.join(output_directory, 'drama.cls')
+        os.remove(destination_filename)
 
     def generate(self, output_path):
         """Assemble the LaTeX file"""
@@ -173,8 +191,20 @@ class LatexGenerator(Generator):
             for message in self.messages:
                 latex_document.extend(self._generate_latex_for_message(message))
 
+        # Sometimes we need to prepare environment before running latex
+        # compiler, so a function is called here. If we have, for example,
+        # written a custom latex class and would like to copy it to output
+        # directory, so that the latex compiler can actually compile it, that
+        # would be done in this function.
+        self._prepare_latex_environment(output_path)
+
         # Compile latex document
         latex_document.generate_pdf(clean_tex=True, compiler='xelatex')
+
+        # After the latex file is compiled, another function is called that is
+        # responsible for cleaning up after generator. In most cases, the
+        # function should remove class files.
+        self._clean_latex_environment(output_path)
 
 class PlariLatexGenerator(LatexGenerator):
 
@@ -222,3 +252,14 @@ class PlariLatexGenerator(LatexGenerator):
         return [
             NoEscape('\\repl{{ {} }} {}\n\n'.format(escape_latex(message.sender), escape_latex(message.message))),
         ]
+    
+    def _prepare_latex_environment(self, output_path):
+        output_directory = os.path.dirname(output_path)
+        source_filename = os.path.join('drama_generator/generators/templates/', 'plari.cls')
+        destination_filename = os.path.join(output_directory, 'plari.cls')
+        shutil.copyfile(source_filename, destination_filename)
+
+    def _clean_latex_environment(self, output_path):
+        output_directory = os.path.dirname(output_path)
+        destination_filename = os.path.join(output_directory, 'plari.cls')
+        os.remove(destination_filename)
