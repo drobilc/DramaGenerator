@@ -32,23 +32,52 @@ pip install -r requirements.txt
 ## Running
 
 Run the drama generator script using `python generate_drama.py <PATH TO INPUT FILE>`.
-The `<PATH TO INPUT FILE>` is the only mandatory argument
+The `<PATH TO INPUT FILE>` is the only **mandatory** argument.
 
 The drama generator script also accepts the following arguments:
 
-- `--output-file` `<PATH TO OUTPUT FILE>` has default value of `/drama_generator/generated_dramas/<INPUT FILE NAME>`
-- `--parser` `<PARSER>` should be chosen according to what social media are the messages from and in which format they are. Values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`. If none is given, the default value `FacebookHTMLParser` will be used.
-- `--generator` `<GENERATOR>` should be chosen based on what we want our generated file to be: a drama or an infografic with statistics. Values can be choosen from the following options: `LatexGenerator`, `PlariLatexGenerator`, `StatisticsGenerator`. If none is given, the default value `LatexGenerator` will be used.
-- `--after` `<DATE FROM>` only messages sent after this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
-- `--before` `<DATE TO>` only messages sent before this date will be used in the process of generating the drama, format `YYYY-MM-DD-HH:MM:SS`, eg. `2020-03-27` or `2020-03-27-07:31:22`
-- `--exclude` `<EXCLUDE PERSONS>` is a list of persons user wants excluded form the chat - their messages won't be used, e.g. `--exclude "first person,second person,third person"`
-- `--shout` capitalizes all the messages in the drama
-- `--title` `<TITLE>` is the title user wants for their drama/infographic
-- `--no-acts` tells generator not to split drama into acts
-- `--no-scenes` tells generator not to split drama into scenes
-- `--new-scene-time` `<HOURS>`specifies minimal time in hours (float) that has to pass between two consecutive messages so that one scene ends and another one starts
+### General arguments
 
-Example:
+These arguments can be applied regardless of the choice of social media, format of exported messages, or format you want generated.
+
+|FLAG           |SHORTER FLAG|ARGUMENT|DEFAULT|MEANING|
+|---------------|:----------:|:------:|-------|-------|
+|`--output-file`|`-o `       |string  |`/drama_generator/generated_dramas/<INPUT FILE NAME>`|path to output file|
+|`--parser`     |`-p`        |string  |`FacebookHTMLParser`|parser chosen according to what social media the messages sre from and in which format they are, values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`, `WhatsAppParser`, `PickleParser`|
+|`--generator`  |`-g`        |string  |`LatexGenerator`|generator chosen based on what we want our generated file to be: a drama or an infografic with statistics; values can be choosen from the following options: `LatexGenerator`, `PlariLatexGenerator`, `StatisticsGenerator`|
+
+### Parser specific arguments
+
+|USABLE IN PARSER    |FLAG           |ARGUMENT|DEFAULT              |MEANING|
+|--------------------|---------------|:------:|---------------------|-------|
+|`FacebookHTMLParser`|`--date-format`|string  |`%b %d, %Y, %I:%M %p`|format of the datetime from the file with your exported messages to be used when parsing|
+|`FacebookHTMLParser`|`--locale`     |string  |`english_us`         |locale from the file with your exported messages to be used when parsing dates\*|
+|`WhatsAppParser`    |`--date-format`|string  |`%d/%m/%Y, %H:%M`    |format of the datetime from the file with your exported messages to be used when parsing|
+
+\* in case date format contains localized date strings such as 'Marec'/'March'/'März'/...
+
+### Processor specific arguments - filters
+
+These arguments can be applied regardless of the choice of social media, format of exported messages, or format you want generated. They do not have default values.
+
+|FLAG       |SHORTER FLAG|ARGUMENT|MEANING|
+|-----------|:----------:|:------:|-------|
+|`--after`  |-`a`        |string  |date in format `YYYY-MM-DD-HH:MM:SS` or `YYYY-MM-DD`, only messages sent after this date will be used in generation process|
+|`--before` |`-b`        |string  |date in format `YYYY-MM-DD-HH:MM:SS` or `YYYY-MM-DD`, only messages sent before this date will be used in generation process|
+|`--exclude`|`-e`        |string  |list of persons separated by `,`, whose messages should not be used in generation process|
+|`--shout`  |            |none    |if this flag is present, all messages in generated drama will be written in capital letters|
+
+### Generator specific arguments
+
+|USABLE IN GENERATOR   |FLAG              |SHORTER FLAG|ARGUMENT|DEFAULT    |MEANING|
+|----------------------|------------------|:----------:|:------:|-----------|-------|
+|`LatexGenerator`, `StatisticsGenerator`|`--title`         |`-t`        |string  |`The Drama`|title of the outputed document|
+|`LatexGenerator`     |`--no-acts`       |            |none    |           |if this flag is present, the generated drama won't be divided into acts|
+|`LatexGenerator`     |`--no-scenes`     |            |none    |           |if this flag is present, the generated drama won't be divided into scenes, and consequently, won't be divided into acts either|
+|`LatexGenerator`     |`--new-scene-time`|            |float   |           |number of hours that need to pass between two consecutive messages for the first to end the last scene and the second to begin a new one|
+|`StatisticsGenerator`|`--stopwords`     |            |string  |           |path to file containing a list of stopwords, each in its own line|
+
+### Example usage
 
 ```cmd
     python generate_drama.py
