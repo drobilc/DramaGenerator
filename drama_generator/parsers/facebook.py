@@ -31,14 +31,8 @@ class FacebookHTMLParser(Parser):
             default=FacebookHTMLParser.DEFAULT_LOCALE
         )
     
-    def _read_message_file(self, encoding='utf-8'):
-        # TODO: Don't read the whole file at once
-        all_html_files = glob.glob('{}/*.html'.format(self.directory))
-
-        # Check that there is a file we can read from
-        assert len(all_html_files) >= 1 
-        chat_file = open(all_html_files[0], encoding=encoding)
-        return chat_file
+    def _find_chat_files(self):
+        return glob.glob('{}/*.html'.format(self.directory))
     
     def _parse_date(self, date_element):
         return datetime.strptime(date_element.text.lower().strip(), self.arguments.date_format)
@@ -95,13 +89,8 @@ class FacebookHTMLParser(Parser):
             images=message['images'],
             reactions=message['reactions']
         )
-    
-    def parse(self):
-        if self.arguments.locale is not None:
-            locale.setlocale(locale.LC_ALL, self.arguments.locale)
 
-        # Find HTML file in directory and read it
-        html_file = self._read_message_file()
+    def parse_messages_from_file(self, html_file):
         html_file_content = html_file.read()
         
         # Parse it using the BeautifulSoup library
@@ -118,6 +107,30 @@ class FacebookHTMLParser(Parser):
             except Exception as e:
                 logging.error(e)
         
-        # After all messages have been parsed, reverse them, because Facebook
-        # contains them in a reverse date order
-        return list(reversed(messages))
+        return messages
+    
+    def parse(self, encoding='utf-8'):
+        if self.arguments.locale is not None:
+            locale.setlocale(locale.LC_ALL, self.arguments.locale)
+        
+        # Find all Facebook chat files (message_1.html, ...)
+        chat_files = self._find_chat_files()
+        logging.info('Found {} chat files'.format(len(chat_files)))
+
+        # Iterate over all of them, don't bother sorting files, because messages
+        # will be sorted at the end
+        messages = []
+        for filename in chat_files:
+            try:
+                logging.info('Parsing: {}'.format(filename))
+                chat_file = open(filename, encoding=encoding)
+                additional_messages = self.parse_messages_from_file(chat_file)
+                messages.extend(additional_messages)
+            except Exception:
+                logging.info('Could not read chat file {}'.format(filename))
+        
+        # Sort message by date
+        logging.info('Sorting messages')
+        messages.sort(key=lambda message: message.date)
+        
+        return messages
