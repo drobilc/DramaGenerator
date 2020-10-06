@@ -3,8 +3,6 @@ from datetime import datetime
 
 class Generator(object):
 
-    DEFAULT_TITLE = 'The drama'
-
     def __init__(self, messages, arguments=[]):
         self.messages = messages
         
@@ -20,7 +18,8 @@ class Generator(object):
         argument_parser.add_argument('-t', '--title',
             dest='title',
             type=str,
-            help='title for the generated drama or infografic'
+            help='title for the generated drama or infografic',
+            default='The Drama'
         )
 
         # Use argument parser to actually parse received arguments
@@ -28,8 +27,6 @@ class Generator(object):
 
         # If no title is provided, a default title should be inserted instead
         self.title = self.arguments.title
-        if self.title is None:
-            self.title = Generator.DEFAULT_TITLE
     
     def _setup_argument_parser(self, argument_parser):
         """Add additional arguments to argument parser if needed"""
