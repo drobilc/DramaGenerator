@@ -1,8 +1,10 @@
 from .facebook import FacebookHTMLParser
 from .telegram import TelegramJSONParser
 from .whatsapp import WhatsAppParser
+from .pickle import PickleParser
 
 PARSERS = [
+    PickleParser,
     FacebookHTMLParser,
     TelegramJSONParser,
     WhatsAppParser
