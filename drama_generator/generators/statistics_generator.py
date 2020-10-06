@@ -171,18 +171,25 @@ class StatisticsGenerator(Generator):
         contribution_graph_container.append(plot_html)
     
     def _generate_number_of_messages_per_day_graph(self, html):
-        messages_by_day = self._messages_by_day(self.messages)
-
-        days = list(messages_by_day.keys())
-        values = list(map(len, messages_by_day.values()))
+        messages_by_sender = self._messages_by_sender(self.messages)
 
         figure = go.Figure()
         figure.update_layout(template=self._get_default_plot_theme())
+
+        for sender, messages in messages_by_sender.items():
+            messages_by_day = self._messages_by_day(messages)
+            days = list(messages_by_day.keys())
+            values = list(map(len, messages_by_day.values()))
+
+            figure.add_traces(
+                go.Bar(
+                    name=sender,
+                    x=days, y=values,
+                    # marker_color=StatisticsGenerator.PRIMARY_COLOR
+                )
+            )
         
-        figure.add_traces(go.Bar(
-            x=days, y=values,
-            marker_color=StatisticsGenerator.PRIMARY_COLOR
-        ))
+        figure.update_layout(barmode='stack')
 
         generated_plot_html = plotly.offline.plot(figure, include_plotlyjs=False, output_type='div')
         plot_html = BeautifulSoup(generated_plot_html, 'html.parser')
