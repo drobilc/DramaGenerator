@@ -127,7 +127,12 @@ class StatisticsGenerator(Generator):
             font={'family': 'Montserrat', 'color': 'white'},
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
-            colorway=['#1f77b4', '#ff7f0e', '#2ca02c'],
+            colorscale={
+                'sequential': [[0.0, 'rgba(0, 0, 0, 0)'], [1.0, '#28b998']],
+                'diverging': [[0.0, 'rgba(0, 0, 0, 0)'], [1.0, '#28b998']],
+                'sequentialminus': [[0.0, 'rgba(0, 0, 0, 0)'], [1.0, '#28b998']],
+            },
+            colorway=['#28b998'],
             yaxis={
                 'gridcolor': StatisticsGenerator.PRIMARY_COLOR,
                 'showgrid': False
@@ -185,6 +190,31 @@ class StatisticsGenerator(Generator):
         # Export graph as SVG and insert it into our document
         contribution_graph_container = total_messages_element = html.find('div', { 'id': 'number-of-messages-per-day-graph' })
         contribution_graph_container.append(plot_html)
+    
+    def _generate_messages_heatmap(self, html):
+        heatmap_data = [[0 for hour in range(24)] for day in range(7)]
+        
+        for message in self.messages:
+            day = message.date.weekday()
+            hour = message.date.hour
+            heatmap_data[day][hour] += 1
+
+        figure = go.Figure()
+        figure.update_layout(template=self._get_default_plot_theme())
+        
+        figure.add_traces(go.Heatmap(
+            x=['{}h'.format(i) for i in range(24)],
+            y=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            z=heatmap_data,
+            colorscale=[[0.0, '#2b2b41'], [1.0, '#6affdc']]
+        ))
+
+        generated_plot_html = plotly.offline.plot(figure, include_plotlyjs=False, output_type='div')
+        plot_html = BeautifulSoup(generated_plot_html, 'html.parser')
+
+        # Export graph as SVG and insert it into our document
+        message_heatmap_container = total_messages_element = html.find('div', { 'id': 'message-heatmap' })
+        message_heatmap_container.append(plot_html)
 
     def generate(self, output_path):
         if len(self.messages) <= 0:
@@ -226,6 +256,8 @@ class StatisticsGenerator(Generator):
         self._generate_contributions_graph(html)
 
         self._generate_number_of_messages_per_day_graph(html)
+
+        self._generate_messages_heatmap(html)
 
         # Write the modified SVG graphics to output file
         with open(output_path, 'w', encoding='utf-8') as output_file:
