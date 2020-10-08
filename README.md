@@ -42,8 +42,8 @@ These arguments can be applied regardless of the choice of social media, format 
 
 |FLAG           |SHORTER FLAG|ARGUMENT|DEFAULT|MEANING|
 |---------------|:----------:|:------:|-------|-------|
-|`--output-file`|`-o `       |string  |`/drama_generator/generated_dramas/<INPUT FILE NAME>`|path to output file|
-|`--parser`     |`-p`        |string  |`FacebookHTMLParser`|parser chosen according to what social media the messages sre from and in which format they are, values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`, `WhatsAppParser`, `PickleParser`|
+|`--output-file`|`-o`        |string  |`/drama_generator/generated_dramas/<INPUT FILE NAME>`|path to output file|
+|`--parser`     |`-p`        |string  |`FacebookHTMLParser`|parser chosen according to what social media the messages are from and in which format they are, values can be choosen from the following options: `FacebookHTMLParser`, `TelegramJSONDataExtractor`, `WhatsAppParser`, `PickleParser`|
 |`--generator`  |`-g`        |string  |`LatexGenerator`|generator chosen based on what we want our generated file to be: a drama or an infografic with statistics; values can be choosen from the following options: `LatexGenerator`, `PlariLatexGenerator`, `StatisticsGenerator`|
 
 ### Parser specific arguments
@@ -66,6 +66,7 @@ These arguments can be applied regardless of the choice of social media, format 
 |`--before` |`-b`        |string  |date in format `YYYY-MM-DD-HH:MM:SS` or `YYYY-MM-DD`, only messages sent before this date will be used in generation process|
 |`--exclude`|`-e`        |string  |list of persons separated by `,`, whose messages should not be used in generation process|
 |`--shout`  |            |none    |if this flag is present, all messages in generated drama will be written in capital letters|
+|`--remove-emojis`|      |none    |if this flag is present, emojis will be removed from the text before generating the desired output, reccomended for generating drama because emojis turn into white squares in generated pdf, not recommended for generating statistics as some statistics are about emojis|
 
 ### Generator specific arguments
 

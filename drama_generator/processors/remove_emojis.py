@@ -27,6 +27,16 @@ def remove_emoji(string):
     return emoji_pattern.sub(r'', string)
 
 class RemoveEmojisProcessor(Processor):
+
+    def _setup_argument_parser(self, argument_parser):
+        argument_parser.add_argument('--remove-emojis',
+            dest='remove_emojis',
+            action='store_true',
+            help='use if you want to get rid of emojis, reccomended if you\'re generating a drama'
+        )
+
+    def should_run(self):
+        return self.arguments.remove_emojis
     
     def process(self, messages):
         for message in messages:

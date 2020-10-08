@@ -6,7 +6,7 @@ class Processor(object):
         # Construct a new argument parser
         argument_parser = argparse.ArgumentParser()
 
-        # Each subclass of the Generator class should extend the Genarators
+        # Each subclass of the Processor class should extend the Processors
         # _setup_argument_parser(argument_parser) method, which should add
         # arguments to argument parser (if needed, otherwise it should do
         # nothing)
